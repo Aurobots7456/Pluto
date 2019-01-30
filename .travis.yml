@@ -1,4 +1,11 @@
 language: python
+python:
+  - "3.6"
 
 script:
   - python3 robot.py test
+
+notifications:	
+  email:	
+    on_success: never	
+    on_failure: never
