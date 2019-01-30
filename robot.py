@@ -3,6 +3,7 @@
 import wpilib
 from wpilib.drive import DifferentialDrive
 from wpilib.buttons import JoystickButton
+from wpilib.robotcontroller import RobotController
 
 import ctre
 
@@ -63,6 +64,12 @@ class MyRobot(wpilib.TimedRobot):
         # networktables
         NetworkTables.initialize(server='10.74.56.2')
         self.table = NetworkTables.getTable('Robot')
+
+    def robotPeriodic(self):
+        # Runs with every robot package, no matter the mode
+
+        # post voltage value to the networktables
+        self.table.putNumber('voltage', RobotController.getBatteryVoltage())
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
