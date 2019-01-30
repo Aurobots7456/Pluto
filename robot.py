@@ -6,7 +6,10 @@ from wpilib.buttons import JoystickButton
 
 import ctre
 
+from networktables import NetworkTables
+
 class MyRobot(wpilib.TimedRobot):
+
     def robotInit(self):
         # Robot initialization function
 
@@ -54,6 +57,9 @@ class MyRobot(wpilib.TimedRobot):
             # While connected to the network with a RoboRIO on it
             robotpy-installer install-opkg python37-robotpy-cscore
         """
+
+        # networktables
+        NetworkTables.initialize(server='10.74.56.2')
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
