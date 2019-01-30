@@ -6,7 +6,9 @@ from wpilib.buttons import JoystickButton
 
 import ctre
 
+import networktables
 from networktables import NetworkTables
+from networktables import NetworkTablesInstance
 
 class MyRobot(wpilib.TimedRobot):
 
@@ -60,6 +62,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # networktables
         NetworkTables.initialize(server='10.74.56.2')
+        self.table = NetworkTables.getTable('Robot')
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
@@ -68,6 +71,9 @@ class MyRobot(wpilib.TimedRobot):
 
         # start the compressor running in closed loop control mode
         self.compressor.start()
+
+        # Put Auto value with mode key into networktables
+        self.table.putString('mode', 'Auto')
 
     def autonomousPeriodic(self):
         # Autonomous Mode(Sandstorm = identical to TeleOp)
@@ -102,6 +108,9 @@ class MyRobot(wpilib.TimedRobot):
 
         # start the compressor running in closed loop control mode
         self.compressor.start()
+
+        # Put TeleOp value with mode key into networktables
+        self.table.putString('mode', 'TeleOp')
 
     def teleopPeriodic(self):
         # TeleOperated mode
