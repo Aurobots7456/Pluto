@@ -53,14 +53,6 @@ class MyRobot(wpilib.TimedRobot):
         # camera
         wpilib.CameraServer.launch()
 
-        """
-            # While connected to the internet
-            robotpy-installer download-opkg python37-robotpy-cscore
-
-            # While connected to the network with a RoboRIO on it
-            robotpy-installer install-opkg python37-robotpy-cscore
-        """
-
         # networktables
         NetworkTables.initialize(server='10.74.56.2')
         self.table = NetworkTables.getTable('Robot')
