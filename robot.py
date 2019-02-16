@@ -19,8 +19,14 @@ class MyRobot(wpilib.TimedRobot):
         # VictorSPX = Motor Controllers
         self.frontLeftMotor = ctre.WPI_VictorSPX(0)
         self.rearLeftMotor = ctre.WPI_VictorSPX(1)
+
         self.frontRightMotor = ctre.WPI_VictorSPX(4)
         self.rearRightMotor = ctre.WPI_VictorSPX(5)
+
+        self.basketMotor = ctre.WPI_VictorSPX(3)
+        
+        # digital inputs
+        self.basketLimitSwitch = wpilib.DigitalInput(0)
 
         # motor controller groups for each side of robot
         self.left = wpilib.SpeedControllerGroup(self.frontLeftMotor, self.rearLeftMotor)
@@ -36,16 +42,18 @@ class MyRobot(wpilib.TimedRobot):
         self.gamepad = wpilib.Joystick(2)
 
         # joystick buttons
+        self.leftButton1 = JoystickButton(self.leftStick, 1)
+        self.rightButton1 = JoystickButton(self.rightStick, 1)
+
         self.gameButton1 = JoystickButton(self.gamepad, 1)
         self.gameButton2 = JoystickButton(self.gamepad, 2)
-        self.gameButton3 = JoystickButton(self.gamepad, 3)
-        self.gameButton4 = JoystickButton(self.gamepad, 4)
+        self.gameButton5 = JoystickButton(self.gamepad, 5)
+        self.gameButton6 = JoystickButton(self.gamepad, 6)
+        self.gameButton7 = JoystickButton(self.gamepad, 7)
+        self.gameButton8 = JoystickButton(self.gamepad, 8)
 
         # solenoid
         self.squeezer = wpilib.DoubleSolenoid(0,1)
-
-        # servo
-        self.servo = wpilib.Servo(0)
 
         # compressor
         self.compressor = wpilib.Compressor(0)
@@ -55,13 +63,14 @@ class MyRobot(wpilib.TimedRobot):
 
         # networktables
         NetworkTables.initialize(server='10.74.56.2')
+        self.SmartDashboard = NetworkTables.getTable('SmartDashboard')
         self.table = NetworkTables.getTable('Robot')
 
     def robotPeriodic(self):
         # Runs with every robot package, no matter the mode
 
         # post voltage value to the networktables
-        self.table.putNumber('voltage', RobotController.getBatteryVoltage())
+        self.SmartDashboard.putNumber('voltage', RobotController.getBatteryVoltage())
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
@@ -78,15 +87,26 @@ class MyRobot(wpilib.TimedRobot):
         # Autonomous Mode(Sandstorm = identical to TeleOp)
 
         # tank drive with left and right sticks' Y axis
-        self.myRobot.tankDrive(self.leftStick.getY() * -1, self.rightStick.getY() * -1)
+        if self.leftButton1.get() or self.rightButton1.get():
+            self.myRobot.tankDrive(self.leftStick.getY() * -1, self.rightStick.getY() * -1)
 
-        # if gameButton3 is pressed; set servo's angle to 180
-        if self.gameButton3.get():
-            self.servo.setAngle(180)
+        else:
+            self.myRobot.tankDrive(self.leftStick.getY() * -1 * 0.5, self.rightStick.getY() * -1 * 0.5)
 
-        # if gameButton4 is pressed; set servo's angle to 0
-        elif self.gameButton4.get():
-            self.servo.setAngle(0)
+        # if gameButton5 is pressed; lower basket
+        if self.gameButton5.get() and not self.gameButton6.get():
+            if not self.basketLimitSwitch.get():
+                self.basketMotor.set(-1)
+            else:
+                self.basketMotor.set(0)
+        
+        # if gameButton5 is pressed; raise basket
+        elif self.gameButton6.get() and not self.gameButton5.get():
+            self.basketMotor.set(1)
+
+        # else, leave the basket still
+        else:
+            self.basketMotor.set(0)
 
         # if gameButton1 is pressed and gameButton2 is not pressed; turn solenoid forward
         if self.gameButton1.get() and not(self.gameButton2.get()):
@@ -95,10 +115,6 @@ class MyRobot(wpilib.TimedRobot):
         # if gameButton2 is pressed and gameButton1 is not pressed; turn solenoid reverse
         elif self.gameButton2.get() and not(self.gameButton1.get()):
             self.squeezer.set(wpilib.DoubleSolenoid.Value.kReverse)
-
-        # if gameButton2 and gameButton1 are not pressed; turn solenoid off
-        else:
-            self.squeezer.set(wpilib.DoubleSolenoid.Value.kOff)
 
     def teleopInit(self):
         # Executed at the start of teleop mode
@@ -115,15 +131,26 @@ class MyRobot(wpilib.TimedRobot):
         # TeleOperated mode
 
         # tank drive with left and right sticks' Y axis
-        self.myRobot.tankDrive(self.leftStick.getY() * -1, self.rightStick.getY() * -1)
+        if self.leftButton1.get() or self.rightButton1.get():
+            self.myRobot.tankDrive(self.leftStick.getY() * -1, self.rightStick.getY() * -1)
 
-        # if gameButton3 is pressed; set servo's angle to 180
-        if self.gameButton3.get():
-            self.servo.setAngle(180)
+        else:
+            self.myRobot.tankDrive(self.leftStick.getY() * -1 * 0.5, self.rightStick.getY() * -1 * 0.5)
 
-        # if gameButton4 is pressed; set servo's angle to 0
-        elif self.gameButton4.get():
-            self.servo.setAngle(0)
+        # if gameButton5 is pressed; lower basket
+        if self.gameButton5.get() and not self.gameButton6.get():
+            if not self.basketLimitSwitch.get():
+                self.basketMotor.set(-1)
+            else:
+                self.basketMotor.set(0)
+        
+        # if gameButton5 is pressed; raise basket
+        elif self.gameButton6.get() and not self.gameButton5.get():
+            self.basketMotor.set(1)
+
+        # else, leave the basket still
+        else:
+            self.basketMotor.set(0)
 
         # if gameButton1 is pressed and gameButton2 is not pressed; turn solenoid forward
         if self.gameButton1.get() and not(self.gameButton2.get()):
@@ -133,9 +160,11 @@ class MyRobot(wpilib.TimedRobot):
         elif self.gameButton2.get() and not(self.gameButton1.get()):
             self.squeezer.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-        # if gameButton2 and gameButton1 are not pressed; turn solenoid off
-        else:
-            self.squeezer.set(wpilib.DoubleSolenoid.Value.kOff)
+
+    def disabledInit(self):
+        # Disabled mode
+
+        self.squeezer.set(wpilib.DoubleSolenoid.Value.kOff)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
