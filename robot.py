@@ -66,8 +66,6 @@ class MyRobot(wpilib.TimedRobot):
         self.SmartDashboard = NetworkTables.getTable('SmartDashboard')
         self.table = NetworkTables.getTable('Robot')
 
-        x = 0
-
     def robotPeriodic(self):
         # Runs with every robot package, no matter the mode
 
@@ -128,8 +126,6 @@ class MyRobot(wpilib.TimedRobot):
 
         # Put TeleOp value with mode key into networktables
         self.table.putString('mode', 'TeleOp')
-
-        x = 0
 
     def teleopPeriodic(self):
         # TeleOperated mode
