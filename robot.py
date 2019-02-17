@@ -66,6 +66,8 @@ class MyRobot(wpilib.TimedRobot):
         self.SmartDashboard = NetworkTables.getTable('SmartDashboard')
         self.table = NetworkTables.getTable('Robot')
 
+        x = 0
+
     def robotPeriodic(self):
         # Runs with every robot package, no matter the mode
 
@@ -127,6 +129,8 @@ class MyRobot(wpilib.TimedRobot):
         # Put TeleOp value with mode key into networktables
         self.table.putString('mode', 'TeleOp')
 
+        x = 0
+
     def teleopPeriodic(self):
         # TeleOperated mode
 
@@ -137,21 +141,24 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.myRobot.tankDrive(self.leftStick.getY() * -1 * 0.5, self.rightStick.getY() * -1 * 0.5)
 
-        # if gameButton5 is pressed; lower basket
+        # lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
+
+            # limit switch
             if not self.basketLimitSwitch.get():
                 self.basketMotor.set(-1)
             else:
                 self.basketMotor.set(0)
-        
-        # if gameButton5 is pressed; raise basket
+
+        # raise the basket
         elif self.gameButton6.get() and not self.gameButton5.get():
+
             self.basketMotor.set(1)
 
-        # else, leave the basket still
         else:
-            self.basketMotor.set(0)
 
+            self.basketMotor.set(0)
+        
         # if gameButton1 is pressed and gameButton2 is not pressed; turn solenoid forward
         if self.gameButton1.get() and not(self.gameButton2.get()):
             self.squeezer.set(wpilib.DoubleSolenoid.Value.kForward)
