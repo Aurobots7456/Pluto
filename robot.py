@@ -77,7 +77,7 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
         # Executed at the start of autonomous mode
         
-        self.myRobot.setSafetyEnabled(True)
+        self.myRobot.setSafetyEnabled(False)
 
         # start the compressor running in closed loop control mode
         self.compressor.start()
@@ -121,7 +121,7 @@ class MyRobot(wpilib.TimedRobot):
     def teleopInit(self):
         # Executed at the start of teleop mode
         
-        self.myRobot.setSafetyEnabled(True)
+        self.myRobot.setSafetyEnabled(False)
 
         # start the compressor running in closed loop control mode
         self.compressor.start()
