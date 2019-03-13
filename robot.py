@@ -49,8 +49,6 @@ class MyRobot(wpilib.TimedRobot):
         self.gameButton2 = JoystickButton(self.gamepad, 2)
         self.gameButton5 = JoystickButton(self.gamepad, 5)
         self.gameButton6 = JoystickButton(self.gamepad, 6)
-        self.gameButton7 = JoystickButton(self.gamepad, 7)
-        self.gameButton8 = JoystickButton(self.gamepad, 8)
 
         # solenoid
         self.squeezer = wpilib.DoubleSolenoid(0,1)
