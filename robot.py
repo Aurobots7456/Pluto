@@ -7,6 +7,8 @@ from wpilib.robotcontroller import RobotController
 
 import ctre
 
+import time
+
 import networktables
 from networktables import NetworkTables
 from networktables import NetworkTablesInstance
@@ -36,6 +38,8 @@ class MyRobot(wpilib.TimedRobot):
         self.myRobot = DifferentialDrive(self.left, self.right)
         self.myRobot.setExpiration(0.1)
 
+        self.direction = -1
+
         # Joysticks & Gamepad
         self.leftStick = wpilib.Joystick(0)
         self.rightStick = wpilib.Joystick(1)
@@ -44,6 +48,8 @@ class MyRobot(wpilib.TimedRobot):
         # Joystick buttons
         self.leftButton1 = JoystickButton(self.leftStick, 1)
         self.rightButton1 = JoystickButton(self.rightStick, 1)
+        self.rightButton2 = JoystickButton(self.rightStick, 2)
+        self.rightButton3 = JoystickButton(self.rightStick, 3)
 
         # Gamepad buttons
         self.gameButton1 = JoystickButton(self.gamepad, 1)
@@ -85,13 +91,21 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousPeriodic(self):
         # Autonomous Mode(Sandstorm = Identical to TeleOp)
 
+        # If rightButton2 is pressed; change the direction to forward
+        if self.rightButton2.get() and not(self.rightButton3.get()):
+            self.direction = -1
+
+        # If rightButton3 is pressed; change the direction to backward
+        elif self.rightButton3.get() and not(self.rightButton2.get()):
+            self.direction = 1
+
         # Tank drive with left and right sticks' Y axis
         if self.leftButton1.get() or self.rightButton1.get():
             # Use full axis value for full speed
-            self.myRobot.tankDrive(self.leftStick.getY() * -1, self.rightStick.getY() * -1)
+            self.myRobot.tankDrive(self.leftStick.getY() * self.direction, self.rightStick.getY() * self.direction)
         else:
             # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.leftStick.getY() * -1 * 0.5, self.rightStick.getY() * -1 * 0.5)
+            self.myRobot.tankDrive(self.leftStick.getY() * self.direction * 0.5, self.rightStick.getY() * self.direction * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
@@ -136,14 +150,22 @@ class MyRobot(wpilib.TimedRobot):
     def teleopPeriodic(self):
         # TeleOperated mode
 
+        # If rightButton2 is pressed; change the direction to forward
+        if self.rightButton2.get() and not(self.rightButton3.get()):
+            self.direction = -1
+
+        # If rightButton3 is pressed; change the direction to backward
+        elif self.rightButton3.get() and not(self.rightButton2.get()):
+            self.direction = 1
+
         # Tank drive with left and right sticks' Y axis
         if self.leftButton1.get() or self.rightButton1.get():
             # Use full axis value for full speed
-            self.myRobot.tankDrive(self.leftStick.getY() * -1, self.rightStick.getY() * -1)
+            self.myRobot.tankDrive(self.leftStick.getY() * self.direction, self.rightStick.getY() * self.direction)
 
         else:
             # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.leftStick.getY() * -1 * 0.5, self.rightStick.getY() * -1 * 0.5)
+            self.myRobot.tankDrive(self.leftStick.getY() * self.direction * 0.5, self.rightStick.getY() * self.direction * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
