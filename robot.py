@@ -48,8 +48,8 @@ class MyRobot(wpilib.TimedRobot):
         # Joystick buttons
         self.leftButton1 = JoystickButton(self.leftStick, 1)
         self.rightButton1 = JoystickButton(self.rightStick, 1)
-        self.rightButton2 = JoystickButton(self.rightStick, 2)
         self.rightButton3 = JoystickButton(self.rightStick, 3)
+        self.rightButton4 = JoystickButton(self.rightStick, 4)
 
         # Gamepad buttons
         self.gameButton1 = JoystickButton(self.gamepad, 1)
@@ -92,11 +92,11 @@ class MyRobot(wpilib.TimedRobot):
         # Autonomous Mode(Sandstorm = Identical to TeleOp)
 
         # If rightButton2 is pressed; change the direction to forward
-        if self.rightButton2.get() and not(self.rightButton3.get()):
+        if self.rightButton3.get() and not(self.rightButton4.get()):
             self.direction = -1
 
         # If rightButton3 is pressed; change the direction to backward
-        elif self.rightButton3.get() and not(self.rightButton2.get()):
+        elif self.rightButton4.get() and not(self.rightButton3.get()):
             self.direction = 1
 
         # Tank drive with left and right sticks' Y axis
@@ -151,11 +151,11 @@ class MyRobot(wpilib.TimedRobot):
         # TeleOperated mode
 
         # If rightButton2 is pressed; change the direction to forward
-        if self.rightButton2.get() and not(self.rightButton3.get()):
+        if self.rightButton3.get() and not(self.rightButton4.get()):
             self.direction = -1
 
         # If rightButton3 is pressed; change the direction to backward
-        elif self.rightButton3.get() and not(self.rightButton2.get()):
+        elif self.rightButton4.get() and not(self.rightButton3.get()):
             self.direction = 1
 
         # Tank drive with left and right sticks' Y axis
