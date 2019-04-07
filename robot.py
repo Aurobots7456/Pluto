@@ -7,8 +7,6 @@ from wpilib.robotcontroller import RobotController
 
 import ctre
 
-import time
-
 import networktables
 from networktables import NetworkTables
 from networktables import NetworkTablesInstance
@@ -68,17 +66,6 @@ class MyRobot(wpilib.TimedRobot):
 
         # Camera Server
         wpilib.CameraServer.launch()
-
-        # Networktables
-        NetworkTables.initialize(server='10.74.56.2')
-        self.SmartDashboard = NetworkTables.getTable('SmartDashboard')
-        self.table = NetworkTables.getTable('Robot')
-
-    def robotPeriodic(self):
-        # Runs with every robot package, regardless the mode
-
-        # Post voltage value to the networktables
-        self.SmartDashboard.putNumber('voltage', RobotController.getBatteryVoltage())
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
@@ -197,12 +184,6 @@ class MyRobot(wpilib.TimedRobot):
         # If gameButton4 is pressed and gameButton3 is not; retract the basket 
         if self.gameButton4.get() and not(self.gameButton3.get()):
             self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-
-
-    def disabledInit(self):
-        # Disabled mode
-
-        self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kOff)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
