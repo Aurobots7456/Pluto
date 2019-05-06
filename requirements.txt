@@ -1,4 +1,4 @@
-wpilib==2019.2.3
 robotpy_ctre==2019.3.2
-pyfrc==2019.0.7
+pyfrc==2019.1.0
 pynetworktables==2019.0.2
+wpilib==2019.2.3
