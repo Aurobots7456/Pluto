@@ -78,16 +78,8 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousPeriodic(self):
         # Autonomous Mode(Sandstorm = Identical to TeleOp)
 
-        # If rightButton2 is pressed; change the direction to forward
-        if self.rightButton3.get() and not(self.rightButton4.get()):
-            self.direction = -1
-
-        # If rightButton3 is pressed; change the direction to backward
-        elif self.rightButton4.get() and not(self.rightButton3.get()):
-            self.direction = 1
-
         # Tank drive with left and right sticks' Y axis
-        self.myRobot.tankDrive(self.leftStick.getY() * self.direction * 0.5, self.rightStick.getY() * self.direction * 0.5)
+        self.myRobot.tankDrive(self.leftStick.getY() * 0.5, self.rightStick.getY() * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
@@ -132,16 +124,8 @@ class MyRobot(wpilib.TimedRobot):
     def teleopPeriodic(self):
         # TeleOperated mode
 
-        # If rightButton2 is pressed; change the direction to forward
-        if self.rightButton3.get() and not(self.rightButton4.get()):
-            self.direction = -1
-
-        # If rightButton3 is pressed; change the direction to backward
-        elif self.rightButton4.get() and not(self.rightButton3.get()):
-            self.direction = 1
-
         # Tank drive with left and right sticks' Y axis
-        self.myRobot.tankDrive(self.leftStick.getY() * self.direction * 0.5, self.rightStick.getY() * self.direction * 0.5)
+        self.myRobot.tankDrive(self.leftStick.getY() * 0.5, self.rightStick.getY() * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
