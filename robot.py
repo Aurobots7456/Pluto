@@ -79,7 +79,7 @@ class MyRobot(wpilib.TimedRobot):
         # Autonomous Mode(Sandstorm = Identical to TeleOp)
 
         # Tank drive with left and right sticks' Y axis
-        self.myRobot.tankDrive(self.leftStick.getY() * 0.5, self.rightStick.getY() * 0.5)
+        self.myRobot.tankDrive(self.leftStick.getY() * -0.5, self.rightStick.getY() * -0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
@@ -125,7 +125,7 @@ class MyRobot(wpilib.TimedRobot):
         # TeleOperated mode
 
         # Tank drive with left and right sticks' Y axis
-        self.myRobot.tankDrive(self.leftStick.getY() * 0.5, self.rightStick.getY() * 0.5)
+        self.myRobot.tankDrive(self.leftStick.getY() * -0.5, self.rightStick.getY() * -0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
