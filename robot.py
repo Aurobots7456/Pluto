@@ -87,10 +87,10 @@ class MyRobot(wpilib.TimedRobot):
         # Tank drive with left and right sticks' Y axis
         if self.leftButton1.get() or self.rightButton1.get():
             # Use full axis value for full speed
-            self.myRobot.tankDrive(self.controller.getRawAxis(1) * self.direction, self.controller.getRawAxis(5) * self.direction)
+            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
         else:
             # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.controller.getRawAxis(1) * self.direction * 0.5, self.controller.getRawAxis(5) * self.direction * 0.5)
+            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5, self.gamepad.getRawAxis(5) * self.direction * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
@@ -146,11 +146,11 @@ class MyRobot(wpilib.TimedRobot):
         # Tank drive with left and right sticks' Y axis
         if self.leftButton1.get() or self.rightButton1.get():
             # Use full axis value for full speed
-            self.myRobot.tankDrive(self.controller.getRawAxis(1) * self.direction, self.controller.getRawAxis(5) * self.direction)
+            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
 
         else:
             # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.controller.getRawAxis(1) * self.direction * 0.5, self.controller.getRawAxis(5) * self.direction * 0.5)
+            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5, self.gamepad.getRawAxis(5) * self.direction * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.gameButton5.get() and not self.gameButton6.get():
