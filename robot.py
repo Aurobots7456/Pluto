@@ -11,6 +11,65 @@ import networktables
 from networktables import NetworkTables
 from networktables import NetworkTablesInstance
 
+
+def init(self):
+    # Enable safety
+    self.myRobot.setSafetyEnabled(False)
+
+    # Start the compressor running in closed loop control mode
+    self.compressor.start()
+
+
+def periodic(self):
+    # If rightButton2 is pressed; change the direction to forward
+    if self.directionForwardButton.get() and not(self.directionBackwardButton.get()):
+        self.direction = -1
+
+    # If rightButton3 is pressed; change the direction to backward
+    elif self.directionBackwardButton.get() and not(self.directionForwardButton.get()):
+        self.direction = 1
+
+    # Tank drive with left and right sticks' Y axis
+    if self.speedUpButton1.get() or self.speedUpButton2.get():
+        # Use full axis value for full speed
+        self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
+
+    else:
+        # Use half of the axis value for decreased speed
+        self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5, self.gamepad.getRawAxis(5) * self.direction * 0.5)
+
+    # If gameButton5 is pressed; lower the basket
+    if self.raiseBasketButton.get() and not self.lowerBasketButton.get():
+        if not self.basketLimitSwitch.get():
+            # If basketLimitSwitch is triggered stop the basket
+            self.basketMotor.set(-1)
+        else:
+            self.basketMotor.set(0)
+
+    # If gameButton6 is pressed; raise the basket
+    elif self.lowerBasketButton.get() and not self.raiseBasketButton.get():
+        self.basketMotor.set(1)
+
+    else:
+        self.basketMotor.set(0)
+
+    # If pushHatchButton is pressed and gameButton2 is not; push the hatch
+    if self.pushHatchButton.get() and not(self.retractHatchButton.get()):
+        self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+
+    # If gameButton2 is pressed and gameButton1 is not; retract the hatch
+    elif self.retractHatchButton.get() and not(self.pushHatchButton.get()):
+        self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+
+    # If gameButton3 is pressed and gameButton4 is not; push the basket
+    if self.pushBasketButton.get() and not(self.retractBasketButton.get()):
+        self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+
+    # If gameButton4 is pressed and gameButton3 is not; retract the basket
+    if self.retractBasketButton.get() and not(self.pushBasketButton.get()):
+        self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+
+
 class MyRobot(wpilib.TimedRobot):
 
     def robotInit(self):
@@ -38,22 +97,21 @@ class MyRobot(wpilib.TimedRobot):
 
         self.direction = -1
 
-        # Joysticks & Gamepad
+        # Declare gamepad
         self.gamepad = wpilib.Joystick(1)
 
-        # Joystick buttons
-        self.leftButton1 = JoystickButton(self.gamepad, 7) # Speed up
-        self.rightButton1 = JoystickButton(self.gamepad, 8) # Speed up
-        self.rightButton3 = JoystickButton(self.gamepad, 9) # Set direction to forward
-        self.rightButton4 = JoystickButton(self.gamepad, 10) # Set direction to backward
-
-        # Gamepad buttons
-        self.gameButton1 = JoystickButton(self.gamepad, 1)
-        self.gameButton2 = JoystickButton(self.gamepad, 2)
-        self.gameButton3 = JoystickButton(self.gamepad, 3)
-        self.gameButton4 = JoystickButton(self.gamepad, 4)
-        self.gameButton5 = JoystickButton(self.gamepad, 5)
-        self.gameButton6 = JoystickButton(self.gamepad, 6)
+        # Declare buttons
+        # Controller mapping (1-10): East, South, North, East, Right Bumper, Left Bumper, ?, ?, ?, ?
+        self.pushHatchButton = JoystickButton(self.gamepad, 1)
+        self.retractHatchButton = JoystickButton(self.gamepad, 2)
+        self.pushBasketButton = JoystickButton(self.gamepad, 3)
+        self.retractBasketButton = JoystickButton(self.gamepad, 4)
+        self.raiseBasketButton = JoystickButton(self.gamepad, 5)
+        self.lowerBasketButton = JoystickButton(self.gamepad, 6)
+        self.speedUpButton1 = JoystickButton(self.gamepad, 7)
+        self.speedUpButton2 = JoystickButton(self.gamepad, 8)
+        self.directionForwardButton = JoystickButton(self.gamepad, 9)
+        self.directionBackwardButton = JoystickButton(self.gamepad, 10)
 
         # Solenoids
         self.hatchSolenoid = wpilib.DoubleSolenoid(0, 1)
@@ -67,121 +125,20 @@ class MyRobot(wpilib.TimedRobot):
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
-        
-        self.myRobot.setSafetyEnabled(False)
-
-        # Start the compressor running in closed loop control mode
-        self.compressor.start()
+        init(self)
 
     def autonomousPeriodic(self):
         # Autonomous Mode(Sandstorm = Identical to TeleOp)
-
-        # If rightButton2 is pressed; change the direction to forward
-        if self.rightButton3.get() and not(self.rightButton4.get()):
-            self.direction = -1
-
-        # If rightButton3 is pressed; change the direction to backward
-        elif self.rightButton4.get() and not(self.rightButton3.get()):
-            self.direction = 1
-
-        # Tank drive with left and right sticks' Y axis
-        if self.leftButton1.get() or self.rightButton1.get():
-            # Use full axis value for full speed
-            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
-        else:
-            # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5, self.gamepad.getRawAxis(5) * self.direction * 0.5)
-
-        # If gameButton5 is pressed; lower the basket
-        if self.gameButton5.get() and not self.gameButton6.get():
-            if not self.basketLimitSwitch.get():
-                self.basketMotor.set(-1)
-            else:
-                # If basketLimitSwitch is triggered stop the basket
-                self.basketMotor.set(0)
-        
-        # If gameButton6 is pressed; raise the basket
-        elif self.gameButton6.get() and not self.gameButton5.get():
-            self.basketMotor.set(1)
-
-        # Else, leave the basket still
-        else:
-            self.basketMotor.set(0)
-
-        # If gameButton1 is pressed and gameButton2 is not; push the hatch
-        if self.gameButton1.get() and not(self.gameButton2.get()):
-            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-
-        # If gameButton2 is pressed and gameButton1 is not; retract the hatch
-        elif self.gameButton2.get() and not(self.gameButton1.get()):
-            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-
-        # If gameButton3 is pressed and gameButton4 is not; push the basket 
-        if self.gameButton3.get() and not(self.gameButton4.get()):
-            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-
-        # If gameButton4 is pressed and gameButton3 is not; retract the basket 
-        if self.gameButton4.get() and not(self.gameButton3.get()):
-            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        periodic(self)
 
     def teleopInit(self):
         # Executed at the start of teleop mode
-        
-        self.myRobot.setSafetyEnabled(False)
-
-        # Start the compressor running in closed loop control mode
-        self.compressor.start()
+        init(self)
 
     def teleopPeriodic(self):
         # TeleOperated mode
+        periodic(self)
 
-        # If rightButton2 is pressed; change the direction to forward
-        if self.rightButton3.get() and not(self.rightButton4.get()):
-            self.direction = -1
-
-        # If rightButton3 is pressed; change the direction to backward
-        elif self.rightButton4.get() and not(self.rightButton3.get()):
-            self.direction = 1
-
-        # Tank drive with left and right sticks' Y axis
-        if self.leftButton1.get() or self.rightButton1.get():
-            # Use full axis value for full speed
-            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
-
-        else:
-            # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5, self.gamepad.getRawAxis(5) * self.direction * 0.5)
-
-        # If gameButton5 is pressed; lower the basket
-        if self.gameButton5.get() and not self.gameButton6.get():
-            if not self.basketLimitSwitch.get():
-                # If basketLimitSwitch is triggered stop the basket
-                self.basketMotor.set(-1)
-            else:
-                self.basketMotor.set(0)
-      
-        # If gameButton6 is pressed; raise the basket
-        elif self.gameButton6.get() and not self.gameButton5.get():
-            self.basketMotor.set(1)
-
-        else:
-            self.basketMotor.set(0)
-        
-        # If gameButton1 is pressed and gameButton2 is not; push the hatch
-        if self.gameButton1.get() and not(self.gameButton2.get()):
-            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-
-        # If gameButton2 is pressed and gameButton1 is not; retract the hatch
-        elif self.gameButton2.get() and not(self.gameButton1.get()):
-            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-
-        # If gameButton3 is pressed and gameButton4 is not; push the basket 
-        if self.gameButton3.get() and not(self.gameButton4.get()):
-            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-
-        # If gameButton4 is pressed and gameButton3 is not; retract the basket 
-        if self.gameButton4.get() and not(self.gameButton3.get()):
-            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
