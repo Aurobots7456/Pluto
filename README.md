@@ -25,3 +25,7 @@ Then run the code below to deploy to the robot:
 `````
 python ./robot.py deploy
 `````
+---
+
+## Controls
+![Picture of Controller](RobotControls.png)
