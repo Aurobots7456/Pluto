@@ -21,16 +21,21 @@ def init(self):
 
 
 def periodic(self):
-    # If rightButton2 is pressed; change the direction to forward
-    if self.directionForwardButton.get() and not(self.directionBackwardButton.get()):
-        self.direction = -1
+    if not self.directionToggleButton.get():
+        self.directionActed = False
+    if not self.toggleHatchButton.get():
+        self.hatchActed = False
+    if not self.toggleBasketButton.get():
+        self.basketActed = False
 
-    # If rightButton3 is pressed; change the direction to backward
-    elif self.directionBackwardButton.get() and not(self.directionForwardButton.get()):
-        self.direction = 1
+    # If rightButton2 is pressed; change the direction to forward
+    if self.directionToggleButton.get() and not self.directionActed:
+        self.directionActed = True
+
+        self.direction = -self.direction
 
     # Tank drive with left and right sticks' Y axis
-    if self.speedUpButton1.get() or self.speedUpButton2.get():
+    if self.speedUpButton.get():
         # Use full axis value for full speed
         self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
 
@@ -53,21 +58,23 @@ def periodic(self):
     else:
         self.basketMotor.set(0)
 
-    # If pushHatchButton is pressed and gameButton2 is not; push the hatch
-    if self.pushHatchButton.get() and not(self.retractHatchButton.get()):
-        self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+    # If pushHatchButton is pressed and retractHatchButton is not; push the hatch
+    if self.toggleHatchButton.get() and not self.hatchActed:
+        self.hatchActed = True
 
-    # If gameButton2 is pressed and gameButton1 is not; retract the hatch
-    elif self.retractHatchButton.get() and not(self.pushHatchButton.get()):
-        self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        if self.hatchSolenoid.get() == wpilib.DoubleSolenoid.Value.kForward:
+            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        else:
+            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
-    # If gameButton3 is pressed and gameButton4 is not; push the basket
-    if self.pushBasketButton.get() and not(self.retractBasketButton.get()):
-        self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+    # If pushBasketButton is pressed and retractBasketButton is not; push the basket
+    if self.toggleBasketButton.get() and not self.basketActed:
+        self.basketActed = True
 
-    # If gameButton4 is pressed and gameButton3 is not; retract the basket
-    if self.retractBasketButton.get() and not(self.pushBasketButton.get()):
-        self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        if self.basketSolenoid.get() == wpilib.DoubleSolenoid.Value.kForward:
+            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        else:
+            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -101,17 +108,18 @@ class MyRobot(wpilib.TimedRobot):
         self.gamepad = wpilib.Joystick(1)
 
         # Declare buttons
-        # Controller mapping (1-10): East, South, North, East, Right Bumper, Left Bumper, ?, ?, ?, ?
-        self.pushHatchButton = JoystickButton(self.gamepad, 1)
-        self.retractHatchButton = JoystickButton(self.gamepad, 2)
-        self.pushBasketButton = JoystickButton(self.gamepad, 3)
-        self.retractBasketButton = JoystickButton(self.gamepad, 4)
+        # Controller mapping (1-10): East, South, North, West, Right Bumper, Left Bumper, ?, ?, ?, ?
+        self.toggleHatchButton = JoystickButton(self.gamepad, 1)
+        self.toggleBasketButton = JoystickButton(self.gamepad, 2)
+        self.directionToggleButton = JoystickButton(self.gamepad, 3)
+        self.speedUpButton = JoystickButton(self.gamepad, 4)
         self.raiseBasketButton = JoystickButton(self.gamepad, 5)
         self.lowerBasketButton = JoystickButton(self.gamepad, 6)
-        self.speedUpButton1 = JoystickButton(self.gamepad, 7)
-        self.speedUpButton2 = JoystickButton(self.gamepad, 8)
-        self.directionForwardButton = JoystickButton(self.gamepad, 9)
-        self.directionBackwardButton = JoystickButton(self.gamepad, 10)
+
+        # Determine if already acted on
+        self.hatchActed = False
+        self.basketActed = False
+        self.directionActed = False
 
         # Solenoids
         self.hatchSolenoid = wpilib.DoubleSolenoid(0, 1)
