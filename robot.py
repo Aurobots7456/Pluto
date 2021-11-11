@@ -3,81 +3,75 @@
 import wpilib
 from wpilib.drive import DifferentialDrive
 from wpilib.buttons import JoystickButton
-from wpilib.robotcontroller import RobotController
 
 import ctre
 
-import networktables
-from networktables import NetworkTables
-from networktables import NetworkTablesInstance
 
+class MyRobot(wpilib.TimedRobot):
+    def init(self):
+        # Enable safety
+        self.myRobot.setSafetyEnabled(False)
 
-def init(self):
-    # Enable safety
-    self.myRobot.setSafetyEnabled(False)
+        # Start the compressor running in closed loop control mode
+        self.compressor.start()
 
-    # Start the compressor running in closed loop control mode
-    self.compressor.start()
+    def periodic(self):
+        if not self.directionToggleButton.get():
+            self.directionActed = False
+        if not self.toggleHatchButton.get():
+            self.hatchActed = False
+        if not self.toggleBasketButton.get():
+            self.basketActed = False
 
+        # If rightButton2 is pressed; change the direction to forward
+        if self.directionToggleButton.get() and not self.directionActed:
+            self.directionActed = True
 
-def periodic(self):
-    if not self.directionToggleButton.get():
-        self.directionActed = False
-    if not self.toggleHatchButton.get():
-        self.hatchActed = False
-    if not self.toggleBasketButton.get():
-        self.basketActed = False
+            self.direction = -self.direction
 
-    # If rightButton2 is pressed; change the direction to forward
-    if self.directionToggleButton.get() and not self.directionActed:
-        self.directionActed = True
+        # Tank drive with left and right sticks' Y axis
+        if self.speedUpButton.get():
+            # Use full axis value for full speed
+            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction,
+                                   self.gamepad.getRawAxis(5) * self.direction)
 
-        self.direction = -self.direction
+        else:
+            # Use half of the axis value for decreased speed
+            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5,
+                                   self.gamepad.getRawAxis(5) * self.direction * 0.5)
 
-    # Tank drive with left and right sticks' Y axis
-    if self.speedUpButton.get():
-        # Use full axis value for full speed
-        self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction, self.gamepad.getRawAxis(5) * self.direction)
+        # If gameButton5 is pressed; lower the basket
+        if self.raiseBasketButton.get() and not self.lowerBasketButton.get():
+            if not self.basketLimitSwitch.get():
+                # If basketLimitSwitch is triggered stop the basket
+                self.basketMotor.set(-1)
+            else:
+                self.basketMotor.set(0)
 
-    else:
-        # Use half of the axis value for decreased speed
-        self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5, self.gamepad.getRawAxis(5) * self.direction * 0.5)
+        # If gameButton6 is pressed; raise the basket
+        elif self.lowerBasketButton.get() and not self.raiseBasketButton.get():
+            self.basketMotor.set(1)
 
-    # If gameButton5 is pressed; lower the basket
-    if self.raiseBasketButton.get() and not self.lowerBasketButton.get():
-        if not self.basketLimitSwitch.get():
-            # If basketLimitSwitch is triggered stop the basket
-            self.basketMotor.set(-1)
         else:
             self.basketMotor.set(0)
 
-    # If gameButton6 is pressed; raise the basket
-    elif self.lowerBasketButton.get() and not self.raiseBasketButton.get():
-        self.basketMotor.set(1)
+        # If pushHatchButton is pressed and retractHatchButton is not; push the hatch
+        if self.toggleHatchButton.get() and not self.hatchActed:
+            self.hatchActed = True
 
-    else:
-        self.basketMotor.set(0)
+            if self.hatchSolenoid.get() == wpilib.DoubleSolenoid.Value.kForward:
+                self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+            else:
+                self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
-    # If pushHatchButton is pressed and retractHatchButton is not; push the hatch
-    if self.toggleHatchButton.get() and not self.hatchActed:
-        self.hatchActed = True
+        # If pushBasketButton is pressed and retractBasketButton is not; push the basket
+        if self.toggleBasketButton.get() and not self.basketActed:
+            self.basketActed = True
 
-        if self.hatchSolenoid.get() == wpilib.DoubleSolenoid.Value.kForward:
-            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-        else:
-            self.hatchSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-
-    # If pushBasketButton is pressed and retractBasketButton is not; push the basket
-    if self.toggleBasketButton.get() and not self.basketActed:
-        self.basketActed = True
-
-        if self.basketSolenoid.get() == wpilib.DoubleSolenoid.Value.kForward:
-            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-        else:
-            self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-
-
-class MyRobot(wpilib.TimedRobot):
+            if self.basketSolenoid.get() == wpilib.DoubleSolenoid.Value.kForward:
+                self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+            else:
+                self.basketSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
     def robotInit(self):
         # Robot initialization function
@@ -133,19 +127,19 @@ class MyRobot(wpilib.TimedRobot):
 
     def autonomousInit(self):
         # Executed at the start of autonomous mode
-        init(self)
+        self.init()
 
     def autonomousPeriodic(self):
         # Autonomous Mode(Sandstorm = Identical to TeleOp)
-        periodic(self)
+        self.periodic()
 
     def teleopInit(self):
         # Executed at the start of teleop mode
-        init(self)
+        self.init()
 
     def teleopPeriodic(self):
         # TeleOperated mode
-        periodic(self)
+        self.periodic()
 
 
 if __name__ == "__main__":
