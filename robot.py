@@ -99,7 +99,7 @@ class MyRobot(wpilib.TimedRobot):
         self.direction = -1
 
         # Declare gamepad
-        self.gamepad = wpilib.Joystick(1)
+        self.gamepad = wpilib.Joystick(0)
 
         # Declare buttons
         # Controller mapping (1-10): East, South, North, West, Right Bumper, Left Bumper, ?, ?, ?, ?
