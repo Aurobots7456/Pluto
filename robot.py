@@ -29,16 +29,46 @@ class MyRobot(wpilib.TimedRobot):
 
             self.direction = -self.direction
 
+        # Tank drive with left joystick
+        x = self.gamepad.getRawAxis(0)
+        y = self.gamepad.getRawAxis(1)
+        angle = math.atan(y / x)
+        # Calculates the power to each side using trig unit circle
+        if x>0:
+            if y>=0:
+                rightPower = abs(400 * angle / math.pi - 100)
+                leftPower = 100
+            else:
+                leftPower = -abs(400 * angle / math.pi - 100)
+                rightPower = -100
+        elif x<0:
+            if y>=0:
+                leftPower = abs(400 * angle / math.pi - 100)
+                rightPower = 100
+            else:
+                rightPower = -abs(400 * angle / math.pi - 100)
+                leftPower = -100
+        elif x == 0:
+            if y>0:
+                rightPower = 100
+                leftPower = 100
+            elif y<0:
+                rightPower = -100
+                leftPower = -100
+            else:
+                rightPower = 0
+                leftPower = 0
+        speed = math.sqrt(x**2 + y**2)
         # Tank drive with left and right sticks' Y axis
         if self.speedUpButton.get():
             # Use full axis value for full speed
-            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction,
-                                   self.gamepad.getRawAxis(5) * self.direction)
+            self.myRobot.tankDrive(leftPower * speed,
+                                   rightPower * speed)
 
         else:
             # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5,
-                                   self.gamepad.getRawAxis(5) * self.direction * 0.5)
+            self.myRobot.tankDrive(leftPower * speed * 0.5,
+                                   rightPower * speed * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.raiseBasketButton.get() and not self.lowerBasketButton.get():
