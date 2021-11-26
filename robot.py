@@ -4,7 +4,7 @@ import wpilib
 from wpilib.drive import DifferentialDrive
 from wpilib.buttons import JoystickButton
 
-import ctre
+import ctre, math
 
 
 class MyRobot(wpilib.TimedRobot):
