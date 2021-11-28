@@ -29,42 +29,42 @@ class MyRobot(wpilib.TimedRobot):
 
             self.direction = -self.direction
 
-        # Tank drive with left joystick
+        # Tank drive section
         x = self.gamepad.getRawAxis(0)
         y = self.gamepad.getRawAxis(1)
-        angle = math.atan(y / x)
-        # Calculates the power to each side using trig unit circle
-        if x>0:
-            if y>=0:
-                rightPower = abs(400 * angle / math.pi - 100)
-                leftPower = 100
-            else:
-                leftPower = -abs(400 * angle / math.pi - 100)
-                rightPower = -100
-        elif x<0:
-            if y>=0:
-                leftPower = abs(400 * angle / math.pi - 100)
-                rightPower = 100
-            else:
-                rightPower = -abs(400 * angle / math.pi - 100)
-                leftPower = -100
-        elif x == 0:
-            if y>0:
+
+        if x == 0:
+            if y >= 0:
                 rightPower = 100
                 leftPower = 100
-            elif y<0:
+            elif y < 0:
                 rightPower = -100
                 leftPower = -100
-            else:
-                rightPower = 0
-                leftPower = 0
-        speed = math.sqrt(x**2 + y**2)
-        # Tank drive with left and right sticks' Y axis
+        else:
+            angle = math.atan(y / x)
+            # Calculates the power to each side using trig unit circle
+            if x > 0:
+                if y >= 0:
+                    rightPower = 400 * angle / math.pi - 100
+                    leftPower = 100
+                else:
+                    leftPower = 400 * angle / math.pi - 100
+                    rightPower = -100
+            elif x < 0:
+                if y >= 0:
+                    leftPower = 400 * angle / math.pi - 100
+                    rightPower = 100
+                else:
+                    rightPower = 400 * angle / math.pi - 100
+                    leftPower = -100
+
+        # uses pythag to tell joystick's distance from center
+        speed = math.sqrt(x ** 2 + y ** 2)
+        # Tank drive with left joystick
         if self.speedUpButton.get():
             # Use full axis value for full speed
             self.myRobot.tankDrive(leftPower * speed,
                                    rightPower * speed)
-
         else:
             # Use half of the axis value for decreased speed
             self.myRobot.tankDrive(leftPower * speed * 0.5,
