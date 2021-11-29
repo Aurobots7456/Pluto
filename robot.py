@@ -63,12 +63,12 @@ class MyRobot(wpilib.TimedRobot):
         # Tank drive with left joystick
         if self.speedUpButton.get():
             # Use full axis value for full speed
-            self.myRobot.tankDrive(leftPower * speed,
-                                   rightPower * speed)
+            self.myRobot.tankDrive(leftPower / 100 * speed,
+                                   rightPower / 100 * speed)
         else:
             # Use half of the axis value for decreased speed
-            self.myRobot.tankDrive(leftPower * speed * 0.5,
-                                   rightPower * speed * 0.5)
+            self.myRobot.tankDrive(leftPower / 100 * speed * 0.5,
+                                   rightPower / 100 * speed * 0.5)
 
         # If gameButton5 is pressed; lower the basket
         if self.raiseBasketButton.get() and not self.lowerBasketButton.get():
