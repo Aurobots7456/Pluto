@@ -16,7 +16,7 @@ class MyRobot(wpilib.TimedRobot):
         self.compressor.start()
 
     def periodic(self):
-        if not self.directionToggleButton.get():
+        if not self.toggleDirectionButton.get():
             self.directionActed = False
         if not self.toggleHatchButton.get():
             self.hatchActed = False
@@ -24,7 +24,7 @@ class MyRobot(wpilib.TimedRobot):
             self.basketActed = False
 
         # If rightButton2 is pressed; change the direction to forward
-        if self.directionToggleButton.get() and not self.directionActed:
+        if self.toggleDirectionButton.get() and not self.directionActed:
             self.directionActed = True
 
             self.direction = -self.direction
@@ -40,7 +40,7 @@ class MyRobot(wpilib.TimedRobot):
             self.myRobot.tankDrive(self.gamepad.getRawAxis(1) * self.direction * 0.5,
                                    self.gamepad.getRawAxis(5) * self.direction * 0.5)
 
-        # If gameButton5 is pressed; lower the basket
+        # If raiseBasketButton is pressed; lower the basket
         if self.raiseBasketButton.get() and not self.lowerBasketButton.get():
             if not self.basketLimitSwitch.get():
                 # If basketLimitSwitch is triggered stop the basket
@@ -48,14 +48,14 @@ class MyRobot(wpilib.TimedRobot):
             else:
                 self.basketMotor.set(0)
 
-        # If gameButton6 is pressed; raise the basket
+        # If lowerBasketButton is pressed; raise the basket
         elif self.lowerBasketButton.get() and not self.raiseBasketButton.get():
             self.basketMotor.set(1)
 
         else:
             self.basketMotor.set(0)
 
-        # If pushHatchButton is pressed and retractHatchButton is not; push the hatch
+        # If toggleHatchButton is pressed and retractHatchButton is not; push the hatch
         if self.toggleHatchButton.get() and not self.hatchActed:
             self.hatchActed = True
 
@@ -102,11 +102,12 @@ class MyRobot(wpilib.TimedRobot):
         self.gamepad = wpilib.Joystick(0)
 
         # Declare buttons
-        # Controller mapping (1-10): East, South, North, West, Right Bumper, Left Bumper, ?, ?, ?, ?
+        # Controller mapping (1-10): B (East), A (South), Y (North), X (West), Right Bumper, Left Bumper, ?, ?, ?, ?
         self.toggleHatchButton = JoystickButton(self.gamepad, 1)
         self.toggleBasketButton = JoystickButton(self.gamepad, 2)
-        self.directionToggleButton = JoystickButton(self.gamepad, 3)
+        self.toggleDirectionButton = JoystickButton(self.gamepad, 3)
         self.speedUpButton = JoystickButton(self.gamepad, 4)
+
         self.raiseBasketButton = JoystickButton(self.gamepad, 5)
         self.lowerBasketButton = JoystickButton(self.gamepad, 6)
 
